@@ -106,3 +106,33 @@ def txt_to_csv(txt_file):
         df.to_csv(txt_file[:-4] + '.csv', index=False)
     else:
         raise ValueError('File format not supported.')
+
+
+
+
+def saving_path(dataset_name, data_type, percentage, num_examples=None, augmentation_method=None):
+    if data_type == "original":
+        base_path = "results/original/lstm"
+    elif data_type == "augmented":
+        base_path = "results/augmentation/lstm"
+    else:
+        raise ValueError("Invalid data_type. Choose 'original' or 'augmented'.")
+
+    os.makedirs(base_path, exist_ok=True)
+
+    if data_type == "original":
+        file_path = os.path.join(base_path, f"{percentage}_percent", f"{dataset_name}_{percentage}_results.txt")
+    else:
+        if augmentation_method is None or num_examples is None:
+            raise ValueError("For augmented data, you need to provide augmentation_method and num_examples.")
+
+        aug_method_path = os.path.join(base_path, augmentation_method)
+        os.makedirs(aug_method_path, exist_ok=True)
+
+        percent_path = os.path.join(aug_method_path, f"{percentage}_percent")
+        os.makedirs(percent_path, exist_ok=True)
+
+        file_path = os.path.join(percent_path, f"{dataset_name}_{augmentation_method}_{percentage}_{num_examples}_examples_results.txt")
+
+    return file_path
+
