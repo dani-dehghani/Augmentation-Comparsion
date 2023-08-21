@@ -161,4 +161,5 @@ class SimpleBert:
         plt.title("t-SNE Visualization of Last Layer")
         plt.xlabel("t-SNE Dimension 1")
         plt.ylabel("t-SNE Dimension 2")
+        plt.savefig('cardio.png')
         plt.show()
