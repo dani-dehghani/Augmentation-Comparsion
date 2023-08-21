@@ -17,7 +17,7 @@ if __name__ == "__main__":
             print(f"Loaded data for {dataset} dataset")
             simple_bert.load_data()
             print(f"Trained model for {dataset} dataset")
-            res = simple_bert.run_n_times(n=3)
+            res = simple_bert.run_n_times(n=1)
             # Add these lines to perform dimensionality reduction and visualization
             hidden_states = simple_bert.extract_pre_last_layer(simple_bert.test['text'])
             simple_bert.visualize_tsne(hidden_states, simple_bert.test['labels'])
