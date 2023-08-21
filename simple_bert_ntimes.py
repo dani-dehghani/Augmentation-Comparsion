@@ -6,6 +6,9 @@ from simpletransformers.classification import ClassificationModel
 import torch
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.preprocessing import LabelEncoder
+import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
+
 
 np.random.seed(100)
 
@@ -147,3 +150,15 @@ class SimpleBert:
         hidden_states = base_model_output.last_hidden_state
         return hidden_states
 
+    def visualize_tsne(self, hidden_states, labels):
+        tsne = TSNE(n_components=2, random_state=42)
+        tsne_result = tsne.fit_transform(hidden_states)
+    
+        # Plot t-SNE results
+        plt.figure(figsize=(10, 8))
+        plt.scatter(tsne_result[:, 0], tsne_result[:, 1], c=labels, cmap='viridis')
+        plt.colorbar()
+        plt.title("t-SNE Visualization of Last Layer")
+        plt.xlabel("t-SNE Dimension 1")
+        plt.ylabel("t-SNE Dimension 2")
+        plt.show()
