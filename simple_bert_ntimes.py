@@ -134,11 +134,11 @@ class SimpleBert:
 
         for folder in glob.glob(pattern):
             shutil.rmtree(folder)
-
-    def extract_pre_last_layer(self, text):
-        # Tokenize the input text
+            
+    def extract_pre_last_layer(self, text_list):
+        # Tokenize the input text list
         tokenizer = self.model.tokenizer
-        inputs = tokenizer(text, return_tensors="pt")
+        inputs = tokenizer(text_list, return_tensors="pt", padding=True, truncation=True, max_length=128)
 
         # Move input tensors to the same device as the model (CPU or GPU)
         inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
@@ -149,6 +149,7 @@ class SimpleBert:
 
         hidden_states = base_model_output.last_hidden_state
         return hidden_states
+
 
     def visualize_tsne(self, hidden_states, labels):
         tsne = TSNE(n_components=2, random_state=42)
