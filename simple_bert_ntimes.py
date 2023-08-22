@@ -19,8 +19,8 @@ class SimpleBert:
         'output_dir': f'./models/bert/full/{self.dataset_name}',
         'reprocess_input_data': True,
         'overwrite_output_dir': True,
-        'train_batch_size': 8,
-        'num_train_epochs': 2,
+        'train_batch_size': 4,
+        'num_train_epochs': 1,
         #'learning_rate': 2e-5,
         'use_multiprocessing': False,
         'use_multiprocessing_for_evaluation': False,
@@ -134,7 +134,7 @@ class SimpleBert:
 
         for folder in glob.glob(pattern):
             shutil.rmtree(folder)
-            
+
     def extract_pre_last_layer(self, text_list):
         # Tokenize the input text list
         tokenizer = self.model.tokenizer
