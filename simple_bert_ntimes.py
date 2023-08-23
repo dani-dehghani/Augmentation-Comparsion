@@ -152,9 +152,12 @@ class SimpleBert:
 
 
     def visualize_tsne(self, hidden_states, labels):
+        # Move hidden_states to CPU memory
+        hidden_states = hidden_states.cpu().numpy()
+
         tsne = TSNE(n_components=2, random_state=42)
         tsne_result = tsne.fit_transform(hidden_states)
-    
+
         # Plot t-SNE results
         plt.figure(figsize=(10, 8))
         plt.scatter(tsne_result[:, 0], tsne_result[:, 1], c=labels, cmap='viridis')
