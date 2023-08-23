@@ -19,13 +19,14 @@ if __name__ == "__main__":
             print(f"Trained model for {dataset} dataset")
             res = simple_bert.run_n_times(n=1)
             # Add these lines to perform dimensionality reduction and visualization
-            #hidden_states = simple_bert.extract_pre_last_layer(simple_bert.test['text'].tolist())
-            #simple_bert.visualize_tsne(hidden_states, simple_bert.test['labels'])
+            text = simple_bert.test['text'].tolist()
+            hidden_states = simple_bert.extract_pre_last_layer(text[1:15])
+            simple_bert.visualize_tsne(hidden_states, simple_bert.test['labels'])
             # simple_bert.train_model()
             # print(f"Evaluated model for {dataset} dataset")
             # res = simple_bert.evaluate_model()                
             # model will be saved during the training process
-            simple_bert.save_results(f"results/augmented/bert/full/{dataset}_full_results.txt",write_to_file=True,n_times=True)              # change the aug or original folder here
+            #simple_bert.save_results(f"results/augmented/bert/full/{dataset}_full_results.txt",write_to_file=True,n_times=True)              # change the aug or original folder here
             print(f"Saved model and results for {dataset} dataset")
             print('cleaning up the checkpoint folders')
             simple_bert.clean_up()
