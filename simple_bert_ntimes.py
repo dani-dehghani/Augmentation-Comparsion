@@ -158,7 +158,7 @@ class SimpleBert:
         # Flatten the hidden_states tensor to 2D
         hidden_states_flat = hidden_states.reshape(hidden_states.shape[0], -1)
 
-        tsne = TSNE(n_components=2,n_iter=1000,perplexity=30.0, random_state=42)
+        tsne = TSNE(n_components=2,n_iter=1500,perplexity=50.0, random_state=42)
         tsne_result = tsne.fit_transform(hidden_states_flat)
 
         # Plot t-SNE results

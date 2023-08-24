@@ -159,20 +159,16 @@ class LSTM:
 
         return hist_dict, res_dict, avg_dict
 
-    def extract_pre_last_layer(self, text_list):
-
-        # Tokenize the input text list
-        sequences = [text.split()[:self.max_seq_len] for text in text_list]
-        padded_sequences = pad_sequences(sequences, maxlen=self.max_seq_len, dtype='float32')
-
+    def extract_pre_last_layer(self, numeric_data):
         # Get the output from the pre-last layer
-        layer_name = 'dense_1'  # Change this to the pre-last layer name in your model
+        layer_name = 'dense_1'  
         intermediate_layer_model = Model(inputs=self.model.input, outputs=self.model.get_layer(layer_name).output)
 
-        # Extract pre-last layer features
-        pre_last_layer_features = intermediate_layer_model.predict(padded_sequences)
+        # Extract pre-last layer features from numeric_data
+        pre_last_layer_features = intermediate_layer_model.predict(numeric_data)
 
         return pre_last_layer_features
+
 
     def visualize_tsne(self, layer_output, labels):
         # Move layer_output to CPU memory
@@ -189,4 +185,5 @@ class LSTM:
         plt.title("t-SNE Visualization of LSTM Layer")
         plt.xlabel("t-SNE Dimension 1")
         plt.ylabel("t-SNE Dimension 2")
+        plt.savefig('lstm_cardio.png')
         plt.show()
