@@ -156,3 +156,30 @@ class LSTM:
         K.clear_session()
 
         return hist_dict, res_dict, avg_dict
+
+    def extract_layer_output(self, input_text):
+        # Create a new model that outputs the desired layer's activations
+        layer_name = 'name_of_desired_layer'  # Replace with the actual layer name
+        intermediate_layer_model = Model(inputs=self.model.input, outputs=self.model.get_layer(layer_name).output)
+
+        # Get the output from the desired layer
+        layer_output = intermediate_layer_model.predict(input_text)
+
+        return layer_output
+
+    def visualize_tsne(self, layer_output, labels):
+        # Move layer_output to CPU memory
+        layer_output = layer_output.astype(np.float64)
+
+        # Perform t-SNE dimensionality reduction
+        tsne = TSNE(n_components=2, random_state=42)
+        tsne_result = tsne.fit_transform(layer_output)
+
+        # Plot t-SNE results
+        plt.figure(figsize=(10, 8))
+        plt.scatter(tsne_result[:, 0], tsne_result[:, 1], c=labels, cmap='viridis')
+        plt.colorbar()
+        plt.title("t-SNE Visualization of LSTM Layer")
+        plt.xlabel("t-SNE Dimension 1")
+        plt.ylabel("t-SNE Dimension 2")
+        plt.show()
