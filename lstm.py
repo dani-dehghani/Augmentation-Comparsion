@@ -14,6 +14,8 @@ import pickle
 import os
 import json
 import random
+import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
 
 #os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 np.random.seed(100)
@@ -157,22 +159,27 @@ class LSTM:
 
         return hist_dict, res_dict, avg_dict
 
-    def extract_layer_output(self, input_text):
-        # Create a new model that outputs the desired layer's activations
-        layer_name = 'name_of_desired_layer'  # Replace with the actual layer name
+    def extract_pre_last_layer(self, text_list):
+
+        # Tokenize the input text list
+        sequences = [text.split()[:self.max_seq_len] for text in text_list]
+        padded_sequences = pad_sequences(sequences, maxlen=self.max_seq_len, dtype='float32')
+
+        # Get the output from the pre-last layer
+        layer_name = 'dense_1'  # Change this to the pre-last layer name in your model
         intermediate_layer_model = Model(inputs=self.model.input, outputs=self.model.get_layer(layer_name).output)
 
-        # Get the output from the desired layer
-        layer_output = intermediate_layer_model.predict(input_text)
+        # Extract pre-last layer features
+        pre_last_layer_features = intermediate_layer_model.predict(padded_sequences)
 
-        return layer_output
+        return pre_last_layer_features
 
     def visualize_tsne(self, layer_output, labels):
         # Move layer_output to CPU memory
         layer_output = layer_output.astype(np.float64)
 
         # Perform t-SNE dimensionality reduction
-        tsne = TSNE(n_components=2, random_state=42)
+        tsne = TSNE(n_components=2,n_iter=1000,perplexity=30.0, random_state=42)
         tsne_result = tsne.fit_transform(layer_output)
 
         # Plot t-SNE results
