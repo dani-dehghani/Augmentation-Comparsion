@@ -175,7 +175,7 @@ class LSTM:
         layer_output = layer_output.astype(np.float64)
 
         # Perform t-SNE dimensionality reduction
-        tsne = TSNE(n_components=2,n_iter=1000,perplexity=30.0, random_state=42)
+        tsne = TSNE(n_components=2,n_iter=1000,perplexity=50.0, random_state=42)
         tsne_result = tsne.fit_transform(layer_output)
 
         # Plot t-SNE results
