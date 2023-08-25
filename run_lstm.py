@@ -5,7 +5,7 @@ dataset_list = ['trec']
 
 if __name__ == '__main__':
     for name in dataset_list:
-        try:
+        #try:
             print (f'Running {name} dataset')
             train_path  = f'data/original/{name}/train_10.csv'
             test_path   = f'data/original/{name}/test.csv'
@@ -25,11 +25,10 @@ if __name__ == '__main__':
             # Call visualize_tsne and extract_pre_last_layer with test_data
             pre_last_layer_features = lstm.extract_pre_last_layer(test_data[0:300])
             lstm.visualize_tsne(pre_last_layer_features, labels[0:300])
-            
             print ('---------------------------------------------------')
             print (f'Average results for {name} dataset')
             print (avg_dict)
             print ('---------------------------------------------------')
-        except:
-            print (f'Error in {name}')
-            continue
+        #except:
+            #print (f'Error in {name}')
+            #continue
