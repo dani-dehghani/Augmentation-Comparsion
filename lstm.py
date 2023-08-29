@@ -219,21 +219,22 @@ class LSTM:
 
         return pre_last_layer_features
 
-    def saving_embeddings(self, test_dataset, dataset_name):
-            embeddings = []
-            with tf.device('/GPU:0'):  
-                for x, _ in test_dataset:
-                    pre_last_layer_features = self.extract_pre_last_layer(x)
-                    embeddings.append(pre_last_layer_features)
-        
-            embeddings = tf.concat(embeddings, axis=0)
-            normalized_embeddings, _ = tf.linalg.normalize(embeddings, axis=None)
 
-        
-            # Assertions to check the shape of embeddings
-            #assert normalized_embeddings.shape[0] == len(test_dataset) and len(normalized_embeddings.shape) == 2
-            os.makedirs("embeddings/original/lstm", exist_ok=True)
-            save_path = f'embeddings/original/lstm/{dataset_name}'
-        
-            # Save the embeddings as a TensorFlow SavedModel
-            tf.saved_model.save(normalized_embeddings, save_path)
+
+    def saving_embeddings(self, test_dataset, dataset_name):
+        embeddings = []
+        with tf.device('/GPU:0'):
+            for x, _ in test_dataset:
+                pre_last_layer_features = self.extract_pre_last_layer(x)
+                embeddings.append(pre_last_layer_features)
+
+        embeddings = tf.concat(embeddings, axis=0)
+        normalized_embeddings, _ = tf.linalg.normalize(embeddings, axis=None)
+
+        # Assertions to check the shape of embeddings
+        #assert normalized_embeddings.shape[0] == len(test_dataset) and len(normalized_embeddings.shape) == 2
+        os.makedirs("embeddings/original/lstm", exist_ok=True)
+        save_path = f'embeddings/original/lstm/{dataset_name}.npy'  # Save as a .npy file
+
+        # Save the embeddings as a NumPy .npy file
+        np.save(save_path, normalized_embeddings)
