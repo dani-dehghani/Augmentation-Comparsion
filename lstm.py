@@ -17,6 +17,7 @@ import random
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 import wandb
+from wandb.keras import WandbCallback
 
 
 
@@ -123,26 +124,30 @@ class LSTM:
     def fit(self, train_dataset, val_dataset):
         self.metrics = [tf.keras.metrics.AUC(name='auc'), tfa.metrics.F1Score(self.n_classes, average='weighted', name='f1_score'), 'accuracy']
         self.build_lstm()
+        
+        # Create the W&B callback
+        wandb_callback = WandbCallback(
+            monitor='val_loss',
+            mode='auto',
+            save_model=False,
+            verbose=1
+        )
+        
+        # Add the W&B callback to the list of callbacks
+        self.callbacks.append(wandb_callback)
+        
+        # Train the model with callbacks
         self.history = self.model.fit(train_dataset, epochs=self.epochs, validation_data=val_dataset, callbacks=self.callbacks, verbose=0)
-
-        # Log train and validation metrics using WandB
-        train_metrics = {f"train_{metric}": value[-1] for metric, value in self.history.history.items() if metric in ['loss', 'auc', 'f1_score', 'accuracy']}
-        val_metrics = self.evaluate(val_dataset)
-
-        # Create dictionaries with metric names
-        train_metric_names = {f"train_{metric}": metric for metric in train_metrics.keys()}
-        val_metric_names = {f"val_{metric}": metric for metric in val_metrics.keys()}
-
-        # Log train and validation metrics with names to WandB
-        wandb.log({**train_metric_names, **train_metrics, **val_metric_names, **val_metrics})
 
         return self.history
 
-    def evaluate(self, test_dataset):
         
+    
+    def evaluate(self, test_dataset):
         evaluation_metrics = self.model.evaluate(test_dataset, return_dict=True)
 
         return evaluation_metrics
+
 
     def run_n_times(self, train_dataset, test_dataset, val_dataset, dataset_name, n=3):
         dataset_list = ['agnews', 'subj', 'pc', 'yelp', 'cr', 'kaggle_med', 'cardio', 'bbc', 'sst2']
@@ -160,14 +165,14 @@ class LSTM:
 
             wandb.init(
                 # set the wandb project where this run will be logged
-                project="Augmentation",
+                project="Aug",
     
                 # track hyperparameters and run metadata
                 config={
                 "Ite": i,
                 "architecture": "LSTM",
                 "dataset name": dataset_name,
-                "epochs": self.epochs,
+                
                 }         
             )
 
@@ -205,6 +210,7 @@ class LSTM:
         K.clear_session()
 
         return hist_dict, res_dict, avg_dict
+
     def extract_pre_last_layer(self, numeric_data):
         # Find the pre-last layer dynamically
         pre_last_layer_index = -2  # Index of the pre-last layer (dense_1 is typically the pre-last layer)
@@ -217,9 +223,6 @@ class LSTM:
         pre_last_layer_features = intermediate_layer_model.predict(numeric_data)
 
         return pre_last_layer_features
-
-
-
 
     def saving_embeddings(self, test_dataset, dataset_name):
         embeddings = []
