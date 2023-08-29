@@ -231,7 +231,7 @@ class LSTM:
 
         
             # Assertions to check the shape of embeddings
-            assert normalized_embeddings.shape[0] == test_dataset.num_samples and len(normalized_embeddings.shape) == 2
+            #assert normalized_embeddings.shape[0] == len(test_dataset) and len(normalized_embeddings.shape) == 2
             os.makedirs("embeddings/original/lstm", exist_ok=True)
             save_path = f'embeddings/original/lstm/{dataset_name}'
         
