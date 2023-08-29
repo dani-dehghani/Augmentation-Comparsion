@@ -30,7 +30,7 @@ wandb.login()
 
 
 class LSTM:
-    def __init__(self, dims, w2v_path,fulldataset ,max_seq_len=20, batch_size=128, epochs=20, chunk_size=1000):
+    def __init__(self, dims, w2v_path,fulldataset= False ,max_seq_len=20, batch_size=128, epochs=20, chunk_size=1000):
         self.fulldataset = fulldataset
         self.dims = dims
         self.max_seq_len = max_seq_len
@@ -121,6 +121,10 @@ class LSTM:
         return train_dataset, test_dataset, val_dataset, self.n_classes
 
     def fit(self, train_dataset, val_dataset):
+        self.metrics = [tf.keras.metrics.AUC(name='auc'), tfa.metrics.F1Score(self.n_classes, average='weighted', name='f1_score'), 'accuracy']
+        self.build_lstm()
+        self.history = self.model.fit(train_dataset, epochs=self.epochs, validation_data=val_dataset, callbacks=self.callbacks, verbose=0)
+
         # Log train and validation metrics using WandB
         train_metrics = {f"train_{metric}": value[-1] for metric, value in self.history.history.items() if metric in ['loss', 'auc', 'f1_score', 'accuracy']}
         val_metrics = self.evaluate(val_dataset)
