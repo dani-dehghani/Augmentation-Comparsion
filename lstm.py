@@ -130,8 +130,12 @@ class LSTM:
         
 
         
-        # Log train and validation metrics to WandB
-        wandb.log({**train_metrics, **val_metrics}) 
+        # Create dictionaries with metric names
+        train_metric_names = {f"train_{metric}": metric for metric in self.history.history.keys()}
+        val_metric_names = {f"val_{metric}": metric for metric in val_metrics.keys()}
+
+        # Log train and validation metrics with names to WandB
+        wandb.log({**train_metric_names, **train_metrics, **val_metric_names, **val_metrics})
         
         
         return self.history
@@ -181,8 +185,8 @@ class LSTM:
             
             
             res = self.evaluate(test_dataset)  # Updated to use test_dataset
-            # Merge and log train, val, and test metrics
-            wandb.log({res})
+            for metric_name, metric_value in res.items():
+                wandb.log({metric_name: metric_value})
             wandb.finish()
             res_dict[i+1] = res
             if self.history.history['val_loss'][-1] < best_val_loss:
