@@ -16,11 +16,17 @@ import json
 import random
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
+import wandb
+
+
 
 #os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 np.random.seed(100)
 random.seed(100)
 tf.random.set_seed(100)
+
+
+wandb.login()
 
 
 class LSTM:
@@ -37,6 +43,8 @@ class LSTM:
         self.history = None
         self.metrics = None
         self.callbacks = None
+        
+
 
     def build_lstm(self):
         if self.n_classes > 2:
@@ -115,13 +123,28 @@ class LSTM:
         self.metrics = [tf.keras.metrics.AUC(name='auc'), tfa.metrics.F1Score(self.n_classes, average='weighted', name='f1_score'), 'accuracy']
         self.build_lstm()
         self.history = self.model.fit(train_dataset, epochs=self.epochs, validation_data=val_dataset, callbacks=self.callbacks, verbose=0)
+        
+        # Log train and validation metrics using WandB
+        train_metrics = {f"train_{metric}": value[-1] for metric, value in self.history.history.items()}
+        val_metrics = self.evaluate(val_dataset)
+        
+
+        wandb.init()
+        
+        # Log train and validation metrics to WandB
+        wandb.log({**train_metrics, **val_metrics}) 
+        
+        
         return self.history
 
     def evaluate(self, test_dataset):
-        return self.model.evaluate(test_dataset, return_dict=True)
+        
+        evaluation_metrics = self.model.evaluate(test_dataset, return_dict=True)
+
+        return evaluation_metrics
 
     def run_n_times(self, train_dataset, test_dataset, val_dataset, dataset_name, n=3):
-
+        dataset_list = ['agnews', 'subj', 'pc', 'yelp', 'cr', 'kaggle_med', 'cardio', 'bbc', 'sst2']
         log_dir = f"logs/fit/lstm/{dataset_name}/" + datetime.now().strftime("%Y%m%d-%H%M%S")
         tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
         decay_rate = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=5, verbose=1, mode='auto', min_delta=0.0001 ,min_lr=0.00001)
@@ -140,11 +163,18 @@ class LSTM:
                 self.model = None
                 self.build_lstm()
                 continue
+            
+            
             res = self.evaluate(test_dataset)  # Updated to use test_dataset
+            # Merge and log train, val, and test metrics
+            wandb.log({res})
+            wandb.finish()
             res_dict[i+1] = res
             if self.history.history['val_loss'][-1] < best_val_loss:
                 best_val_loss = self.history.history['val_loss'][-1]
                 self.model.save(f"models/lstm/10_percent/{dataset_name}_best_model.h5")
+                if dataset_name in dataset_list:
+                    self.saving_embeddings(test_dataset, dataset_name)
             self.model.set_weights([np.zeros(w.shape) for w in self.model.get_weights()])
 
         avg_dict = {metric: round(sum(values[metric] for values in res_dict.values()) / len(res_dict), 4) for metric in res_dict[1].keys()}
@@ -169,21 +199,21 @@ class LSTM:
 
         return pre_last_layer_features
 
+    def saving_embeddings(self, test_dataset, dataset_name):
+            embeddings = []
+            with tf.device('/GPU:0'):  
+                for x, _ in test_dataset:
+                    pre_last_layer_features = self.extract_pre_last_layer(x)
+                    embeddings.append(pre_last_layer_features)
+        
+            embeddings = tf.concat(embeddings, axis=0)
+            normalized_embeddings, _ = tf.linalg.normalize(embeddings, axis=None)
 
-    def visualize_tsne(self, layer_output, labels):
-        # Move layer_output to CPU memory
-        layer_output = layer_output.astype(np.float64)
-
-        # Perform t-SNE dimensionality reduction
-        tsne = TSNE(n_components=2,n_iter=1000,perplexity=50.0, random_state=42)
-        tsne_result = tsne.fit_transform(layer_output)
-
-        # Plot t-SNE results
-        plt.figure(figsize=(10, 8))
-        plt.scatter(tsne_result[:, 0], tsne_result[:, 1], c=labels, cmap='viridis')
-        plt.colorbar()
-        plt.title("t-SNE Visualization of LSTM Layer")
-        plt.xlabel("t-SNE Dimension 1")
-        plt.ylabel("t-SNE Dimension 2")
-        plt.savefig('lstm_cardio.png')
-        plt.show()
+        
+            # Assertions to check the shape of embeddings
+            assert normalized_embeddings.shape[0] == test_dataset.num_samples and len(normalized_embeddings.shape) == 2
+            os.makedirs("embeddings/original/lstm", exist_ok=True)
+            save_path = f'embeddings/original/lstm/{dataset_name}'
+        
+            # Save the embeddings as a TensorFlow SavedModel
+            tf.saved_model.save(normalized_embeddings, save_path)

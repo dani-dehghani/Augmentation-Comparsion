@@ -161,3 +161,20 @@ class CNN:
         K.clear_session()
 
         return hist_dict, res_dict, avg_dict
+
+    def extract_pre_last_layer(self, numeric_data):
+        # Get the output from the pre-last layer 
+        intermediate_layer_model = Model(inputs=self.model.input, outputs=self.model.layers[-2].output)
+
+        # Extract pre-last layer features from numeric_data
+        pre_last_layer_features = intermediate_layer_model.predict(numeric_data)
+
+        return pre_last_layer_features
+
+    def extract_embeddings(self, test_dataset):
+        embeddings = []
+        with tf.device('/CPU:0'):  
+            for x, _ in test_dataset:
+                pre_last_layer_features = self.extract_pre_last_layer(x)
+                embeddings.append(pre_last_layer_features)
+        return tf.concat(embeddings, axis=0)
