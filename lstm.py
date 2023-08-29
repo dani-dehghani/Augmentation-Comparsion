@@ -121,24 +121,17 @@ class LSTM:
         return train_dataset, test_dataset, val_dataset, self.n_classes
 
     def fit(self, train_dataset, val_dataset):
-        self.metrics = [tf.keras.metrics.AUC(name='auc'), tfa.metrics.F1Score(self.n_classes, average='weighted', name='f1_score'), 'accuracy']
-        self.build_lstm()
-        self.history = self.model.fit(train_dataset, epochs=self.epochs, validation_data=val_dataset, callbacks=self.callbacks, verbose=0)
-        
         # Log train and validation metrics using WandB
-        train_metrics = {f"train_{metric}": value[-1] for metric, value in self.history.history.items()}
+        train_metrics = {f"train_{metric}": value[-1] for metric, value in self.history.history.items() if metric in ['loss', 'auc', 'f1_score', 'accuracy']}
         val_metrics = self.evaluate(val_dataset)
-        
 
-        
         # Create dictionaries with metric names
-        train_metric_names = {f"train_{metric}": metric for metric in self.history.history.keys()}
+        train_metric_names = {f"train_{metric}": metric for metric in train_metrics.keys()}
         val_metric_names = {f"val_{metric}": metric for metric in val_metrics.keys()}
 
         # Log train and validation metrics with names to WandB
         wandb.log({**train_metric_names, **train_metrics, **val_metric_names, **val_metrics})
-        
-        
+
         return self.history
 
     def evaluate(self, test_dataset):
@@ -169,7 +162,7 @@ class LSTM:
                 config={
                 "Ite": i,
                 "architecture": "LSTM",
-                "train_dataset": train_dataset,
+                "dataset name": dataset_name,
                 "epochs": self.epochs,
                 }         
             )
@@ -208,16 +201,19 @@ class LSTM:
         K.clear_session()
 
         return hist_dict, res_dict, avg_dict
-
     def extract_pre_last_layer(self, numeric_data):
-        # Get the output from the pre-last layer
-        layer_name = 'dense_1'  
-        intermediate_layer_model = Model(inputs=self.model.input, outputs=self.model.get_layer(layer_name).output)
+        # Find the pre-last layer dynamically
+        pre_last_layer_index = -2  # Index of the pre-last layer (dense_1 is typically the pre-last layer)
+        pre_last_layer = self.model.layers[pre_last_layer_index]
+
+        # Create a model that extracts features from the pre-last layer
+        intermediate_layer_model = Model(inputs=self.model.input, outputs=pre_last_layer.output)
 
         # Extract pre-last layer features from numeric_data
         pre_last_layer_features = intermediate_layer_model.predict(numeric_data)
 
         return pre_last_layer_features
+
 
 
 
