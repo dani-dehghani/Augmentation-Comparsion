@@ -30,7 +30,8 @@ wandb.login()
 
 
 class LSTM:
-    def __init__(self, dims, w2v_path, max_seq_len=20, batch_size=128, epochs=20, chunk_size=1000):
+    def __init__(self, dims, w2v_path,fulldataset= False ,max_seq_len=20, batch_size=128, epochs=20, chunk_size=1000):
+        self.fulldataset = fulldataset
         self.dims = dims
         self.max_seq_len = max_seq_len
         self.batch_size = batch_size
@@ -192,14 +193,14 @@ class LSTM:
             if self.history.history['val_loss'][-1] < best_val_loss:
                 best_val_loss = self.history.history['val_loss'][-1]
                 self.model.save(f"models/lstm/fulldataset/{dataset_name}_best_model.h5")
-                if dataset_name in dataset_list:
+                if self.fulldataset == True:
                     self.saving_embeddings(test_dataset, dataset_name)
             self.model.set_weights([np.zeros(w.shape) for w in self.model.get_weights()])
 
         avg_dict = {metric: round(sum(values[metric] for values in res_dict.values()) / len(res_dict), 4) for metric in res_dict[1].keys()}
 
         # Save the average results to disk
-        os.makedirs("results/original/lstm", exist_ok=True)
+        os.makedirs("results/original/lstm/fulldataset", exist_ok=True)
         with open(f"results/original/lstm/fulldataset/{dataset_name}_fulldataset.txt", "w") as f:
             for key, value in avg_dict.items():
                 f.write(f"{key}: {value}\n")
