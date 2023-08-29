@@ -126,15 +126,15 @@ class LSTM:
         self.build_lstm()
         
         # Create the W&B callback
-        wandb_callback = WandbCallback(
-            monitor='val_loss',
-            mode='auto',
-            save_model=False,
-            verbose=1
-        )
+        #wandb_callback = WandbCallback(
+        #    monitor='val_loss',
+        #    mode='auto',
+        #    save_model= True,
+        #    verbose=0
+        #)
         
         # Add the W&B callback to the list of callbacks
-        self.callbacks.append(wandb_callback)
+        #self.callbacks.append(wandb_callback)
         
         # Train the model with callbacks
         self.history = self.model.fit(train_dataset, epochs=self.epochs, validation_data=val_dataset, callbacks=self.callbacks, verbose=0)
@@ -164,10 +164,8 @@ class LSTM:
 
 
             wandb.init(
-                # set the wandb project where this run will be logged
+                
                 project="Aug",
-    
-                # track hyperparameters and run metadata
                 config={
                 "Ite": i,
                 "architecture": "LSTM",
