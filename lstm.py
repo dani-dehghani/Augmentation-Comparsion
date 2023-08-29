@@ -30,7 +30,7 @@ wandb.login()
 
 
 class LSTM:
-    def __init__(self, dims, w2v_path,fulldataset= False ,max_seq_len=20, batch_size=128, epochs=20, chunk_size=1000):
+    def __init__(self, dims, w2v_path,fulldataset ,max_seq_len=20, batch_size=128, epochs=20, chunk_size=1000):
         self.fulldataset = fulldataset
         self.dims = dims
         self.max_seq_len = max_seq_len
