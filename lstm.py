@@ -129,7 +129,6 @@ class LSTM:
         val_metrics = self.evaluate(val_dataset)
         
 
-        wandb.init()
         
         # Log train and validation metrics to WandB
         wandb.log({**train_metrics, **val_metrics}) 
@@ -155,6 +154,22 @@ class LSTM:
         res_dict = {}
         best_val_loss = float('inf')
         for i in range(n):
+
+
+            wandb.init(
+                # set the wandb project where this run will be logged
+                project="Augmentation",
+    
+                # track hyperparameters and run metadata
+                config={
+                "Ite": i,
+                "architecture": "LSTM",
+                "train_dataset": train_dataset,
+                "epochs": self.epochs,
+                }         
+            )
+
+
             print(f'Run {i+1} of {n}')
             try:
                 self.fit(train_dataset, val_dataset)  # Updated to use train_dataset and val_dataset
