@@ -169,7 +169,7 @@ class LSTM:
                 "architecture": "LSTM",
                 "dataset name": dataset_name,
                 "dataset type": 'Original'
-                "dataset percentage": 10
+                "dataset percentage": 10,
                 "dataset number of example": None
                 }         
             )
