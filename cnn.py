@@ -161,7 +161,7 @@ class CNN:
                 "Ite": i,
                 "architecture": "CNN",
                 "dataset name": dataset_name,
-                "dataset type": 'Original'
+                "dataset type": 'Original',
                 "dataset percentage": 10,
                 "dataset number of example": None
                 
