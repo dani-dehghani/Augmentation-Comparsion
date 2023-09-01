@@ -14,8 +14,6 @@ import pickle
 import os
 import json
 import random
-import matplotlib.pyplot as plt
-from sklearn.manifold import TSNE
 import wandb
 from wandb.keras import WandbCallback
 
@@ -170,7 +168,9 @@ class LSTM:
                 "Ite": i,
                 "architecture": "LSTM",
                 "dataset name": dataset_name,
-                
+                "dataset type": 'Original'
+                "dataset percentage": 10
+                "dataset number of example": None
                 }         
             )
 
@@ -192,7 +192,7 @@ class LSTM:
             res_dict[i+1] = res
             if self.history.history['val_loss'][-1] < best_val_loss:
                 best_val_loss = self.history.history['val_loss'][-1]
-                self.model.save(f"models/lstm/fulldataset/{dataset_name}_best_model.h5")
+                self.model.save(f"models/lstm/10_precent/{dataset_name}_best_model.h5")
                 if self.fulldataset == True:
                     self.saving_embeddings(test_dataset, dataset_name)
             self.model.set_weights([np.zeros(w.shape) for w in self.model.get_weights()])
@@ -200,8 +200,8 @@ class LSTM:
         avg_dict = {metric: round(sum(values[metric] for values in res_dict.values()) / len(res_dict), 4) for metric in res_dict[1].keys()}
 
         # Save the average results to disk
-        os.makedirs("results/original/lstm/fulldataset", exist_ok=True)
-        with open(f"results/original/lstm/fulldataset/{dataset_name}_fulldataset.txt", "w") as f:
+        os.makedirs("results/original/lstm/10_precent", exist_ok=True)
+        with open(f"results/original/lstm/10_precent/{dataset_name}_10_precent.txt", "w") as f:
             for key, value in avg_dict.items():
                 f.write(f"{key}: {value}\n")
 

@@ -14,6 +14,10 @@ import pickle
 import os
 import json
 import random
+import wandb
+from wandb.keras import WandbCallback
+
+wandb.login()
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 np.random.seed(100)
@@ -22,7 +26,8 @@ tf.random.set_seed(100)
 
 
 class CNN:
-    def __init__(self, dims, w2v_path, max_seq_len=20, batch_size=128, epochs=20, chunk_size=1000):
+    def __init__(self, dims, w2v_path,,fulldataset= False, max_seq_len=20, batch_size=128, epochs=20, chunk_size=1000):
+        self.fulldataset = fulldataset
         self.dims = dims
         self.max_seq_len = max_seq_len
         self.batch_size = batch_size
@@ -117,6 +122,19 @@ class CNN:
     def fit(self, train_dataset, val_dataset):
         self.metrics = [tf.keras.metrics.AUC(name='auc'), tfa.metrics.F1Score(self.n_classes, average='weighted', name='f1_score'), 'accuracy']
         self.build_cnn()
+
+        # Create the W&B callback
+        wandb_callback = WandbCallback(
+            monitor='val_loss',
+            mode='auto',
+            save_model= True,
+            verbose=0
+        )
+
+        # Add the W&B callback to the list of callbacks
+        self.callbacks.append(wandb_callback)
+
+
         self.history = self.model.fit(train_dataset, epochs=self.epochs, validation_data=val_dataset, callbacks=self.callbacks, verbose=1)
         return self.history
 
@@ -135,6 +153,21 @@ class CNN:
         res_dict = {}
         best_val_loss = float('inf')
         for i in range(n):
+
+            wandb.init(
+                
+                project="Aug",
+                config={
+                "Ite": i,
+                "architecture": "CNN",
+                "dataset name": dataset_name,
+                "dataset type": 'Original'
+                "dataset percentage": 10
+                "dataset number of example": None
+                
+                }         
+            )
+
             print(f'Run {i+1} of {n}')
             try:
                 self.fit(train_dataset, val_dataset)  # Updated to use train_dataset and val_dataset
@@ -144,10 +177,15 @@ class CNN:
                 self.build_cnn()
                 continue
             res = self.evaluate(test_dataset)  # Updated to use test_dataset
+            for metric_name, metric_value in res.items():
+                wandb.log({metric_name: metric_value})
+            wandb.finish()
             res_dict[i+1] = res
             if self.history.history['val_loss'][-1] < best_val_loss:
                 best_val_loss = self.history.history['val_loss'][-1]
                 self.model.save(f"models/cnn/full/{dataset_name}_best_model.h5")
+                if self.fulldataset == True:
+                    self.saving_embeddings(test_dataset, dataset_name)
             self.model.set_weights([np.zeros(w.shape) for w in self.model.get_weights()])
 
         avg_dict = {metric: round(sum(values[metric] for values in res_dict.values()) / len(res_dict), 4) for metric in res_dict[1].keys()}
@@ -162,19 +200,30 @@ class CNN:
 
         return hist_dict, res_dict, avg_dict
 
-    def extract_pre_last_layer(self, numeric_data):
-        # Get the output from the pre-last layer 
+    def extract_pre_last_layer(self, x):
+        # output of the pre-last layer 
         intermediate_layer_model = Model(inputs=self.model.input, outputs=self.model.layers[-2].output)
 
-        # Extract pre-last layer features from numeric_data
-        pre_last_layer_features = intermediate_layer_model.predict(numeric_data)
+        # Extracting the pre-last layer features 
+        pre_last_layer_features = intermediate_layer_model.predict(x)
 
         return pre_last_layer_features
 
-    def extract_embeddings(self, test_dataset):
+
+    def saving_embeddings(self, test_dataset, dataset_name):
         embeddings = []
-        with tf.device('/CPU:0'):  
+        with tf.device('/GPU:0'):
             for x, _ in test_dataset:
                 pre_last_layer_features = self.extract_pre_last_layer(x)
                 embeddings.append(pre_last_layer_features)
-        return tf.concat(embeddings, axis=0)
+
+        embeddings = tf.concat(embeddings, axis=0)
+        normalized_embeddings, _ = tf.linalg.normalize(embeddings, axis=None)
+
+        # Assertions to check the shape of embeddings
+        #assert normalized_embeddings.shape[0] == len(test_dataset) and len(normalized_embeddings.shape) == 2
+        os.makedirs("embeddings/original/cnn", exist_ok=True)
+        save_path = f'embeddings/original/cnn/{dataset_name}.npy' 
+
+        # Save the embeddings as a NumPy .npy file
+        np.save(save_path, normalized_embeddings)

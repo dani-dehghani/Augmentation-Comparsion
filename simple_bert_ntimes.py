@@ -135,38 +135,4 @@ class SimpleBert:
         for folder in glob.glob(pattern):
             shutil.rmtree(folder)
 
-    def extract_pre_last_layer(self, text_list):
-        # Tokenize the input text list
-        tokenizer = self.model.tokenizer
-        inputs = tokenizer(text_list, return_tensors="pt", padding=True, truncation=True, max_length=128)
-
-        # Move input tensors to the same device as the model 
-        inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
-
-        # Get the output from the base model (layer before the last layer)
-        with torch.no_grad():
-            base_model_output = self.model.model.distilbert(**inputs)
-
-        hidden_states = base_model_output.last_hidden_state
-        return hidden_states
-
-
-    def visualize_tsne(self, hidden_states, labels):
-        # Move hidden_states to CPU memory
-        hidden_states = hidden_states.cpu().numpy()
-
-        # Flatten the hidden_states tensor to 2D
-        hidden_states_flat = hidden_states.reshape(hidden_states.shape[0], -1)
-
-        tsne = TSNE(n_components=2,n_iter=1500,perplexity=50.0, random_state=42)
-        tsne_result = tsne.fit_transform(hidden_states_flat)
-
-        # Plot t-SNE results
-        plt.figure(figsize=(10, 8))
-        plt.scatter(tsne_result[:, 0], tsne_result[:, 1], c=labels, cmap='viridis')
-        plt.colorbar()
-        plt.title("t-SNE Visualization of Last Layer")
-        plt.xlabel("t-SNE Dimension 1")
-        plt.ylabel("t-SNE Dimension 2")
-        plt.savefig('cardio.png')
-        plt.show()
+   
