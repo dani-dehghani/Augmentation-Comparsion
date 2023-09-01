@@ -135,4 +135,17 @@ class SimpleBert:
         for folder in glob.glob(pattern):
             shutil.rmtree(folder)
 
-   
+    def extract_pre_last_layer(self, text):
+            # Tokenize the input text
+            tokenizer = self.model.tokenizer
+            inputs = tokenizer(text, return_tensors="pt")
+
+            # Move input tensors to the same device as the model (CPU or GPU)
+            inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+
+            # Get the output from the base model (layer before the last layer)
+            with torch.no_grad():
+                base_model_output = self.model.model.distilbert(**inputs)
+
+            hidden_states = base_model_output.last_hidden_state
+            return hidden_states

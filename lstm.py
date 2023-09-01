@@ -230,7 +230,6 @@ class LSTM:
                 embeddings.append(pre_last_layer_features)
 
         embeddings = tf.concat(embeddings, axis=0)
-        normalized_embeddings, _ = tf.linalg.normalize(embeddings, axis=None)
 
         # Assertions to check the shape of embeddings
         #assert normalized_embeddings.shape[0] == len(test_dataset) and len(normalized_embeddings.shape) == 2
@@ -238,4 +237,4 @@ class LSTM:
         save_path = f'embeddings/original/lstm/{dataset_name}.npy'  # Save as a .npy file
 
         # Save the embeddings as a NumPy .npy file
-        np.save(save_path, normalized_embeddings)
+        np.save(save_path, embeddings)
