@@ -6,8 +6,8 @@ import random
 #%%
 
 dataset_list = ['agnews','subj','pc','yelp','cr','cardio','bbc','sst2','pubmed','trec']
-
-
+aug_list = ['aeda', 'backtranslation', 'charswap', 'checklist', 'clare', 'deletion','eda', 'embedding', 'wordnet']
+aug_percent = [10,20,50]
 import pandas as pd
 import os
 
@@ -160,6 +160,44 @@ None. The function writes the output to CSV files.
 #%%
 
 
+
+def augmented_percent(dataset,aug_method ,sampling_percentage):
+
+    data_path = f'data/original/{dataset}'
+    original_df = pd.read_csv(os.path.join(data_path, f'train_{sampling_percentage}_percent.csv'))
+
+
+    augmneted_path = f'data/augmented/{dataset}/{aug_method}'
+    augmented_df = pd.read_csv(os.path.join(augmneted_path, f'meth_{aug_method}_pctwts_0.1_example_4.csv'))
+
+    selected_rows = []
+
+    # Iterate through the rows of the augmented DataFrame
+    for i, augmented_row in augmented_df.iterrows():
+        # Check if the augmented row is exactly the same as any row in the original DataFrame
+        is_matching_row = original_df.equals(augmented_row)
+
+        if is_matching_row:
+            # Extract the current row and the next four rows from the augmented DataFrame
+            selected_rows.append(augmented_df.iloc[i:i+5])
+
+    df = pd.concat(selected_rows)
+
+
+    # Define a file path for the output CSV file
+    output_csv_path = os.path.join(augmneted_path, f'meth_{aug_method}_{sampling_percentage}_pctwts_0.1_example_4.csv')
+    df.to_csv(output_csv_path, index=False)
+
+
+
+#%%
+
+if __name__ == '__main__':
+    for name in dataset_list:
+        for aug_method in aug_list:
+            for percent in aug_percent:
+                augmented_percent(name,aug_method, percent)
+            
 
 
 
