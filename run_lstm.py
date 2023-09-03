@@ -1,13 +1,13 @@
 from lstm import *
 
-#dataset_list = ['agnews','subj','pc','yelp','cr','cardio','bbc','sst2','pubmed','trec']
-dataset_list = ['sst2','pubmed','trec']
+dataset_list = ['agnews','subj','pc','yelp','cr','cardio','bbc','sst2','pubmed','trec']
+#dataset_list = ['sst2','pubmed','trec']
 
 if __name__ == '__main__':
     for name in dataset_list:
         #try:
             print (f'Running {name} dataset')
-            train_path  = f'data/original/{name}/train_10_percent.csv'
+            train_path  = f'data/original/{name}/train_20_percent.csv'
             test_path   = f'data/original/{name}/test.csv'
             w2v_path = 'w2v.pkl'
             dataset_name = f'{name}'
