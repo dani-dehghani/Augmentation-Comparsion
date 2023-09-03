@@ -13,7 +13,7 @@ if __name__ == "__main__":
     for dataset in dataset_list:
         try:
             print(f'Running {dataset} dataset')
-            simple_bert = SimpleBert(dataset)
+            simple_bert = SimpleBert(dataset,fulldataset= True)
             print(f"Loaded data for {dataset} dataset")
             simple_bert.load_data()
             print(f"Trained model for {dataset} dataset")

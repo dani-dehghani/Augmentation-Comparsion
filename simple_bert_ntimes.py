@@ -6,14 +6,19 @@ from simpletransformers.classification import ClassificationModel
 import torch
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.preprocessing import LabelEncoder
-import matplotlib.pyplot as plt
-from sklearn.manifold import TSNE
+import os
+import wandb
+from wandb.keras import WandbCallback
+
+
+wandb.login()
 
 
 np.random.seed(100)
 
 class SimpleBert:
-    def __init__(self, dataset_name):
+    def __init__(self, dataset_name,fulldataset= False):
+        self.fulldataset = fulldataset
         self.dataset_name = dataset_name
         self.args = {
         'output_dir': f'./models/bert/full/{self.dataset_name}',
@@ -51,6 +56,7 @@ class SimpleBert:
     def train_model(self):        
         self.model = ClassificationModel('distilbert', 'distilbert-base-uncased', num_labels=self.num_labels, cuda_device=0, use_cuda=True, args=self.args)
         self.model.train_model(self.train)
+
 
     def compute_metrics(self, preds, labels):        
         if self.num_labels == 2:
@@ -135,17 +141,38 @@ class SimpleBert:
         for folder in glob.glob(pattern):
             shutil.rmtree(folder)
 
-    def extract_pre_last_layer(self, text):
-            # Tokenize the input text
-            tokenizer = self.model.tokenizer
-            inputs = tokenizer(text, return_tensors="pt")
+    def extract_embeddings(self, text):
+        # Tokenize the input text
+        tokenizer = self.model.tokenizer
+        inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
 
-            # Move input tensors to the same device as the model (CPU or GPU)
-            inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+        # Move input tensors to the same device as the model (CPU or GPU)
+        inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
 
-            # Get the output from the base model (layer before the last layer)
-            with torch.no_grad():
-                base_model_output = self.model.model.distilbert(**inputs)
+        # Get the output from the base model (layer before the last layer)
+        with torch.no_grad():
+            base_model_output = self.model.model.distilbert(**inputs)
 
-            hidden_states = base_model_output.last_hidden_state
-            return hidden_states
+        hidden_states = base_model_output.last_hidden_state
+
+        # Extract embeddings of [CLS] tokens
+        cls_embeddings = hidden_states[:, 0, :].cpu().numpy()  # Assuming you want CPU numpy arrays
+
+        return cls_embeddings
+
+    def saving_embeddings(self, test_dataset, dataset_name):
+        embeddings = []
+        with torch.no_grad():
+            for x, _ in test_dataset:
+                pre_last_layer_features = self.extract_embeddings(x)
+                embeddings.append(pre_last_layer_features)
+
+        embeddings = torch.cat(embeddings, dim=0)
+
+        os.makedirs("embeddings/original/bert", exist_ok=True)
+        save_path = f'embeddings/original/bert/{dataset_name}.npy'
+
+        # Save the embeddings as a NumPy .npy file
+        np.save(save_path, embeddings.cpu().numpy())
+
+    
