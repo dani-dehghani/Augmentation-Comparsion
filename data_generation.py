@@ -157,6 +157,23 @@ None. The function writes the output to CSV files.
     df_one_example.to_csv(f'data/augmented/{dataset_name}/meth_{method_name}_pctwts_0.5_example_1.csv', index=False)
     df_two_examples.to_csv(f'data/augmented/{dataset_name}/meth_{method_name}_pctwts_0.5_example_2.csv', index=False)
 
+#%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
