@@ -1,10 +1,10 @@
 from  cnn import CNN
 
-dataset_list = ['trec']
+#dataset_list = ['trec']
 #dataset_list = ['bbc']
 
 #dataset_list = ['yelp','bbc','sst2','subj','agnews','trec','pc','cr','kaggle_med','cardio']
-#dataset_list = ['pc','cr','kaggle_med','cardio']
+dataset_list = ['yelp','bbc','sst2','subj','agnews','pc','cr','cardio']
 
 if __name__ == '__main__':
     for name in dataset_list:

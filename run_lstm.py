@@ -1,7 +1,7 @@
 from lstm import *
 
 #dataset_list = ['agnews','subj','pc','yelp','cr','cardio','bbc','sst2','pubmed','trec']
-dataset_list = ['bbc','sst2','pubmed','trec']
+dataset_list = ['sst2','pubmed','trec']
 
 if __name__ == '__main__':
     for name in dataset_list:
