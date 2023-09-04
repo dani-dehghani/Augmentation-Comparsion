@@ -182,9 +182,10 @@ class SimpleBert:
             shutil.rmtree(folder)
 
     def extract_pre_last_layer(self, text, dataset_name):
+        text_list = text['text'].tolist()
         # Tokenize the input text
         tokenizer = self.model.tokenizer
-        inputs = tokenizer(text, return_tensors="pt")
+        inputs = tokenizer(text_list, return_tensors="pt")
 
         # Move input tensors to the same device as the model (CPU or GPU)
         inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
