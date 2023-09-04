@@ -185,7 +185,7 @@ class SimpleBert:
         text_list = text['text'].tolist()
         # Tokenize the input text
         tokenizer = self.model.tokenizer
-        inputs = tokenizer(text_list, return_tensors="pt")
+        inputs = tokenizer(text_list, return_tensors="pt", padding=True, truncation=True, max_length=32)
 
         # Move input tensors to the same device as the model (CPU or GPU)
         inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
@@ -204,33 +204,5 @@ class SimpleBert:
 
 
 
-    def saving_embeddings(self, test_dataset, dataset_name):
-        embeddings = []
-        with torch.no_grad():
-            for x, _ in test_dataset:
-
-                # Tokenize the input text
-                tokenizer = self.model.tokenizer
-                inputs = tokenizer(x, return_tensors="pt")
-
-                # Move input tensors to the same device as the model (CPU or GPU)
-                inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
-
-                # Get the output from the base model (layer before the last layer)
-                with torch.no_grad():
-                    base_model_output = self.model.model.distilbert(**inputs)
-
-                hidden_states = base_model_output.last_hidden_state
-
-                # Extract embeddings of [CLS] tokens
-                cls_embeddings = hidden_states[:, 0, :].cpu().numpy()  # Assuming you want CPU numpy arrays
-
-        embeddings = torch.cat(cls_embeddings, dim=0)
-
-        os.makedirs("embeddings/original/bert", exist_ok=True)
-        save_path = f'embeddings/original/bert/{dataset_name}.npy'
-
-        # Save the embeddings as a NumPy .npy file
-        np.save(save_path, embeddings.cpu().numpy())
 
     
