@@ -1,14 +1,14 @@
 from  cnn import CNN
 
 
-#dataset_list = ['yelp','bbc','sst2','subj','agnews','trec','pc','cr','cardio']
-dataset_list = ['pc','cr','cardio']
+dataset_list = ['yelp','bbc','sst2','subj','agnews','trec','pc','cr','cardio']
+#dataset_list = ['pc','cr','cardio']
 
 if __name__ == '__main__':
     for name in dataset_list:
         try:
             print(f'Running {name} dataset')
-            train_path = f'data/original/{name}/train_10_percent.csv'
+            train_path = f'data/original/{name}/train_20_percent.csv'
             test_path = f'data/original/{name}/test.csv'
             w2v_path = 'w2v.pkl'
             dataset_name = f'{name}'
