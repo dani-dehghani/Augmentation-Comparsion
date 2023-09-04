@@ -181,33 +181,30 @@ class SimpleBert:
         for folder in glob.glob(pattern):
             shutil.rmtree(folder)
 
-    def extract_embeddings(self, text):
-        # Tokenize the input text
-        tokenizer = self.model.tokenizer
-        inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
 
-        # Move input tensors to the same device as the model (CPU or GPU)
-        inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
-
-        # Get the output from the base model (layer before the last layer)
-        with torch.no_grad():
-            base_model_output = self.model.model.distilbert(**inputs)
-
-        hidden_states = base_model_output.last_hidden_state
-
-        # Extract embeddings of [CLS] tokens
-        cls_embeddings = hidden_states[:, 0, :].cpu().numpy()  # Assuming you want CPU numpy arrays
-
-        return cls_embeddings
 
     def saving_embeddings(self, test_dataset, dataset_name):
         embeddings = []
         with torch.no_grad():
             for x, _ in test_dataset:
-                pre_last_layer_features = self.extract_embeddings(x)
-                embeddings.append(pre_last_layer_features)
 
-        embeddings = torch.cat(embeddings, dim=0)
+                # Tokenize the input text
+                tokenizer = self.model.tokenizer
+                inputs = tokenizer(x, return_tensors="pt")
+
+                # Move input tensors to the same device as the model (CPU or GPU)
+                inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+
+                # Get the output from the base model (layer before the last layer)
+                with torch.no_grad():
+                    base_model_output = self.model.model.distilbert(**inputs)
+
+                hidden_states = base_model_output.last_hidden_state
+
+                # Extract embeddings of [CLS] tokens
+                cls_embeddings = hidden_states[:, 0, :].cpu().numpy()  # Assuming you want CPU numpy arrays
+
+        embeddings = torch.cat(cls_embeddings, dim=0)
 
         os.makedirs("embeddings/original/bert", exist_ok=True)
         save_path = f'embeddings/original/bert/{dataset_name}.npy'
