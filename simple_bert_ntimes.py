@@ -40,6 +40,7 @@ class SimpleBert:
         self.num_labels = None
         self.result_metrics = None
         self.n_times_results = None
+        self.callbacks = []
 
     def load_data(self):
         encoder = LabelEncoder()
@@ -55,7 +56,21 @@ class SimpleBert:
 
     def train_model(self):        
         self.model = ClassificationModel('distilbert', 'distilbert-base-uncased', num_labels=self.num_labels, cuda_device=0, use_cuda=True, args=self.args)
-        self.model.train_model(self.train)
+
+        callbacks = []
+
+        # Add the W&B callback
+        wandb_callback = WandbCallback(
+            monitor='val_loss',
+            mode='auto',
+            save_model=True,
+            verbose=0
+        )
+        callbacks.append(wandb_callback)
+
+        # Add any other callbacks you want to use here
+
+        self.model.train_model(self.train, callbacks=callbacks)  
 
 
     def compute_metrics(self, preds, labels):        
@@ -80,23 +95,48 @@ class SimpleBert:
         self.result_metrics = self.result
         # Clear GPU memory
         torch.cuda.empty_cache()
+        # Log metrics to W&B
+        for metric_name, metric_value in self.result_metrics.items():
+            wandb.log({metric_name: metric_value})
+
         return self.result_metrics
+        
 
 
     def run_n_times(self, n):
         dict_list = []                
         for i in range(n):
+
+            wandb.init(
+                
+                project="Aug",
+                config={
+                "Ite": i,
+                "architecture": "Transformer",
+                "dataset name": self.dataset_name,
+                "dataset type": 'Original',
+                "dataset percentage": 'Full dataset',
+                "dataset number of example": None
+                
+                }         
+            )
+
             self.model = None            
             self.model = ClassificationModel('distilbert', 'distilbert-base-uncased', num_labels=self.num_labels, cuda_device=0, use_cuda=True, args=self.args)
             self.train_model()
             self.evaluate_model()
             metrics = self.save_results(write_to_file=False)
+            
+            self.saving_embeddings(self.test, self.dataset_name)
+
 
             temp_dict = {}
             for key, value in metrics.items():         
                 temp_dict[key] = value
             dict_list.append(temp_dict)
-        
+            # Finish the run
+            wandb.finish()
+
         new_dict = {}
         for i in range(n):
             for key, value in dict_list[i].items():

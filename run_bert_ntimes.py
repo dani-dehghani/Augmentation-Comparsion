@@ -11,7 +11,7 @@ if __name__ == "__main__":
     
     #text = 'not too many great features'
     for dataset in dataset_list:
-        try:
+        #try:
             print(f'Running {dataset} dataset')
             simple_bert = SimpleBert(dataset,fulldataset= True)
             print(f"Loaded data for {dataset} dataset")
@@ -27,9 +27,9 @@ if __name__ == "__main__":
             print('cleaning up the checkpoint folders')
             simple_bert.clean_up()
             print(f'results: \n\n\n{res}\n\n\n')
-        except Exception as e:
-            print(f'Error: {e}')
-            continue
+        #except Exception as e:
+            #print(f'Error: {e}')
+            #continue
 
         #pre_last_layer_output = simple_bert.extract_pre_last_layer(text)
         #print(pre_last_layer_output)
