@@ -169,7 +169,7 @@ class SimpleBert:
         if write_to_file:
             with open(output_file, 'w') as f:
                 f.write(result_str)
-        wandb.log(metrics)
+        wandb.log(result_str)
         round_metrics = {key: round(value, 4) for key, value in metrics.items()}
         return round_metrics
 
