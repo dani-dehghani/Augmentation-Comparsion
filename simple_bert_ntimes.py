@@ -94,8 +94,7 @@ class SimpleBert:
         self.result, _, _ = self.model.eval_model(self.test, compute_metrics=self.compute_metrics)
         self.result_metrics = self.result
         # Log metrics to W&B
-        for metric_name, metric_value in self.result_metrics.items():
-            wandb.log({metric_name: metric_value})
+        wandb.log(self.result_metrics)
         # Clear GPU memory
         torch.cuda.empty_cache()
 
@@ -127,10 +126,12 @@ class SimpleBert:
             self.train_model()
             self.evaluate_model()
             metrics = self.save_results(write_to_file=False)
-
+            for metric_name, metric_value in metrics.items():
+                wandb.log({metric_name: metric_value})
+                
             self.extract_pre_last_layer(self.test_embedding, self.dataset_name)
 
-
+            
             temp_dict = {}
             for key, value in metrics.items():         
                 temp_dict[key] = value
@@ -169,7 +170,6 @@ class SimpleBert:
         if write_to_file:
             with open(output_file, 'w') as f:
                 f.write(result_str)
-        wandb.log(result_str)
         round_metrics = {key: round(value, 4) for key, value in metrics.items()}
         return round_metrics
 
