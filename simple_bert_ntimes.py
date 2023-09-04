@@ -93,11 +93,12 @@ class SimpleBert:
     def evaluate_model(self):
         self.result, _, _ = self.model.eval_model(self.test, compute_metrics=self.compute_metrics)
         self.result_metrics = self.result
-        # Clear GPU memory
-        torch.cuda.empty_cache()
         # Log metrics to W&B
         for metric_name, metric_value in self.result_metrics.items():
             wandb.log({metric_name: metric_value})
+        # Clear GPU memory
+        torch.cuda.empty_cache()
+
 
         return self.result_metrics
         
