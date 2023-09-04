@@ -164,23 +164,23 @@ class LSTM:
         for i in range(n):
 
 
-            #wandb.init(
+            wandb.init(
                 
-                #project="Aug",
-                #config={
+                project="Aug",
+                config={
                 
-                #"Ite": i,
-                #"architecture": "LSTM",
-                #"dataset name": dataset_name,
-                #"dataset type": 'Augmented',
-                #"dataset percentage": self.percentage,
-                #"aug method": f'{self.aug_method}',
-                #"examples": self.num_example
+                "Ite": i,
+                "architecture": "LSTM",
+                "dataset name": dataset_name,
+                "dataset type": 'Augmented',
+                "dataset percentage": self.percentage,
+                "aug method": self.aug_method,
+                "examples": self.num_example
                 
-                #}         
-            #)
+                }         
+            )
 
-            wandb.log({"Ite": i})
+            
 
 
             print(f'Run {i+1} of {n}')
