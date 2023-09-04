@@ -7,8 +7,10 @@ import random
 
 dataset_list = ['agnews','subj','pc','yelp','cr','cardio','bbc','sst2','pubmed','trec']
 aug_list = ['aeda', 'backtranslation', 'charswap', 'checklist', 'clare', 'deletion','eda', 'embedding', 'wordnet']
-aug_percent = [10,20,50]
-example_list = [1,2]
+#aug_percent = [10,20,50]
+aug_percent = [100]
+example_list = [1,2,4]
+
 #%%
 def data_percentage(dataset):
     print(f'{dataset} dataset')
@@ -52,8 +54,8 @@ def process_large_csv(testset, max_rows=200):
 
 def augmented_example(dataset, aug_method, sampling_percentage, example=4):
     data_path = f'data/original/{dataset}'
-    original_df = pd.read_csv(os.path.join(data_path, f'train_{sampling_percentage}_percent.csv'))
-    #original_df = pd.read_csv(os.path.join(data_path, 'train.csv'))
+    #original_df = pd.read_csv(os.path.join(data_path, f'train_{sampling_percentage}_percent.csv'))
+    original_df = pd.read_csv(os.path.join(data_path, 'train.csv'))
 
     augmented_path = f'data/augmented/{dataset}/{aug_method}'  # Corrected variable name
     augmented_df = pd.read_csv(os.path.join(augmented_path, f'meth_{aug_method}_pctwts_0.1_example_4.csv'))
