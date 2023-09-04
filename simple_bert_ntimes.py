@@ -127,7 +127,7 @@ class SimpleBert:
             self.evaluate_model()
             metrics = self.save_results(write_to_file=False)
 
-            self.saving_embeddings(self.test_embedding, self.dataset_name)
+            self.extract_pre_last_layer(self.test_embedding, self.dataset_name)
 
 
             temp_dict = {}
@@ -180,6 +180,26 @@ class SimpleBert:
 
         for folder in glob.glob(pattern):
             shutil.rmtree(folder)
+
+    def extract_pre_last_layer(self, text, dataset_name):
+        # Tokenize the input text
+        tokenizer = self.model.tokenizer
+        inputs = tokenizer(text, return_tensors="pt")
+
+        # Move input tensors to the same device as the model (CPU or GPU)
+        inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+
+        # Get the output from the base model (layer before the last layer)
+        with torch.no_grad():
+            base_model_output = self.model.model.distilbert(**inputs)
+
+        hidden_states = base_model_output.last_hidden_state
+        cls_embeddings = hidden_states[:, 0, :].cpu().numpy()
+        os.makedirs("embeddings/original/bert", exist_ok=True)
+        save_path = f'embeddings/original/bert/{dataset_name}.npy'
+
+        # Save the embeddings as a NumPy .npy file
+        np.save(save_path, cls_embeddings.cpu().numpy())
 
 
 
