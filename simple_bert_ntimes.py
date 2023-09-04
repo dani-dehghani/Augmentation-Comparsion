@@ -17,8 +17,7 @@ wandb.login()
 np.random.seed(100)
 
 class SimpleBert:
-    def __init__(self, dataset_name,fulldataset= False):
-        self.fulldataset = fulldataset
+    def __init__(self, dataset_name):
         self.dataset_name = dataset_name
         self.args = {
         'output_dir': f'./models/bert/full/{self.dataset_name}',
@@ -45,6 +44,7 @@ class SimpleBert:
     def load_data(self):
         encoder = LabelEncoder()
         self.train = pd.read_csv(f'data/original/{self.dataset_name}/train.csv').sample(frac=1) # shuffle # change fraction of the dataset here
+        self.test_embedding = pd.read_csv(f'data/original/{self.dataset_name}/test.csv') # this will be used only for embedding
         self.test = pd.read_csv(f'data/original/{self.dataset_name}/test.csv')
         self.train = self.train[['text', 'class']]
         self.test = self.test[['text', 'class']]
@@ -126,8 +126,8 @@ class SimpleBert:
             self.train_model()
             self.evaluate_model()
             metrics = self.save_results(write_to_file=False)
-            
-            self.saving_embeddings(self.test, self.dataset_name)
+
+            self.saving_embeddings(self.test_embedding, self.dataset_name)
 
 
             temp_dict = {}
