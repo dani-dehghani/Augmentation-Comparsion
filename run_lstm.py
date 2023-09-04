@@ -24,6 +24,7 @@ if __name__ == '__main__':
                         lstm = LSTM(dims=300, w2v_path=w2v_path,aug_method=aug,percentage=percent, num_example=i,fulldataset= False, max_seq_len=max_seq_len, batch_size=batch_size, epochs=epochs)
                         train_dataset, test_dataset, val_dataset, n_classes = lstm.insert_values(train_path, test_path)
                         hist_dict, res_dict, avg_dict = lstm.run_n_times(train_dataset, test_dataset, val_dataset, name, n=3)
+
                         print ('---------------------------------------------------')
                         print (f'Average results for {name} dataset')
                         print (avg_dict)
