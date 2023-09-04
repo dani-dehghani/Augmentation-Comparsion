@@ -174,7 +174,7 @@ class LSTM:
                 "dataset name": dataset_name,
                 "dataset type": 'Augmented',
                 "dataset percentage": self.percentage,
-                "aug method": self.aug_method,
+                "aug method": f'{self.aug_method}',
                 "examples": self.num_example
                 
                 }         
@@ -206,10 +206,10 @@ class LSTM:
         avg_dict = {metric: round(sum(values[metric] for values in res_dict.values()) / len(res_dict), 4) for metric in res_dict[1].keys()}
 
         # Save the average results to disk
-        os.makedirs("results/augmented/lstm", exist_ok=True)
-        with open(f"results/augmented/lstm/{self.percentage}/{dataset_name}_{self.percentage}_example_{self.num_example}.txt", "w") as f:
-            for key, value in avg_dict.items():
-                f.write(f"{key}: {value}\n")
+        #os.makedirs("results/augmented/lstm", exist_ok=True)
+        #with open(f"results/augmented/lstm/{self.percentage}/{dataset_name}_{self.percentage}_example_{self.num_example}.txt", "w") as f:
+            #for key, value in avg_dict.items():
+                #f.write(f"{key}: {value}\n")
 
         K.clear_session()
 

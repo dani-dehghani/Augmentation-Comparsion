@@ -18,10 +18,13 @@ if __name__ == '__main__':
                         test_path   = f'data/augmented/{name}/{aug}/test.csv'
                         w2v_path = 'w2v.pkl'
                         dataset_name = f'{name}'
+                        aug_method = f'{aug}'
+                        num_example = i
+                        percentage = percent
                         max_seq_len = 128
                         batch_size = 16
                         epochs = 20
-                        lstm = LSTM(dims=300, w2v_path=w2v_path,aug_method=aug,percentage=percent, num_example=i,fulldataset= False, max_seq_len=max_seq_len, batch_size=batch_size, epochs=epochs)
+                        lstm = LSTM(dims=300, w2v_path=w2v_path,aug_method =aug_method,percentage = percentage, num_example=num_example,fulldataset= False, max_seq_len=max_seq_len, batch_size=batch_size, epochs=epochs)
                         train_dataset, test_dataset, val_dataset, n_classes = lstm.insert_values(train_path, test_path)
                         hist_dict, res_dict, avg_dict = lstm.run_n_times(train_dataset, test_dataset, val_dataset, name, n=3)
 
