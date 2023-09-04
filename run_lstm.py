@@ -18,7 +18,7 @@ if __name__ == '__main__':
                         test_path   = f'data/augmented/{name}/{aug}/test.csv'
                         w2v_path = 'w2v.pkl'
                         dataset_name = f'{name}'
-                        aug_method = f'{aug}'
+                        aug_method = aug
                         num_example = i
                         percentage = percent
                         max_seq_len = 128
