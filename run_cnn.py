@@ -1,8 +1,8 @@
 from  cnn import CNN
 
 
-dataset_list = ['yelp','bbc','sst2','subj','agnews','trec','pc','cr','cardio']
-#dataset_list = ['pc','cr','cardio']
+#dataset_list = ['yelp','bbc','sst2','subj','agnews','trec','pc','cr','cardio']
+dataset_list = ['pc','cr','cardio']
 
 if __name__ == '__main__':
     for name in dataset_list:
