@@ -218,14 +218,13 @@ class LSTM:
         return hist_dict, res_dict, avg_dict
 
     def extract_pre_last_layer(self, numeric_data):
-        # Find the pre-last layer dynamically
-        pre_last_layer_index = -2  # Index of the pre-last layer (dense_1 is typically the pre-last layer)
+        pre_last_layer_index = -2  
         pre_last_layer = self.model.layers[pre_last_layer_index]
 
-        # Create a model that extracts features from the pre-last layer
+        
         intermediate_layer_model = Model(inputs=self.model.input, outputs=pre_last_layer.output)
 
-        # Extract pre-last layer features from numeric_data
+        
         pre_last_layer_features = intermediate_layer_model.predict(numeric_data)
 
         return pre_last_layer_features
