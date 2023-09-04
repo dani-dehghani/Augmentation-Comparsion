@@ -168,13 +168,13 @@ class LSTM:
                 
                 project="Aug",
                 config={
-                'Aug method': f'{self.aug_method}',
+                'Aug method': self.aug_method,
                 "Ite": i,
                 "architecture": "LSTM",
                 "dataset name": dataset_name,
                 "dataset type": 'Augmented',
-                "dataset percentage": f'{self.percentage}',
-                "dataset number of example": f'{self.num_example}'
+                "dataset percentage": self.percentage,
+                "dataset number of example": self.num_example
                 }         
             )
 
