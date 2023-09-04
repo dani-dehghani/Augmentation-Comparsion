@@ -174,7 +174,7 @@ class LSTM:
                 "dataset name": dataset_name,
                 "dataset type": 'Augmented',
                 "dataset percentage": self.percentage,
-                "aug method": f'{self.aug_method}'
+                "aug method": f'{self.aug_method}',
                 "examples": self.num_example
                 
                 }         
