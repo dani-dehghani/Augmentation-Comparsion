@@ -195,7 +195,7 @@ class SimpleBert:
             base_model_output = self.model.model.distilbert(**inputs)
 
         hidden_states = base_model_output.last_hidden_state
-        cls_embeddings = hidden_states[:, 0, :].numpy()
+        cls_embeddings = hidden_states[:, 0, :].cpu().numpy()
         os.makedirs("embeddings/original/bert", exist_ok=True)
         save_path = f'embeddings/original/bert/{dataset_name}.npy'
 
