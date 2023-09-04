@@ -3,8 +3,8 @@ import numpy as np
 
 np.random.seed(100)
 
-dataset_list = ['cr', 'trec', 'agnews', 'pc', 'yelp', 'cardio', 'bbc', 'sst2','subj']
-#dataset_list = ['cardio']
+#dataset_list = ['cr', 'trec', 'agnews', 'pc', 'yelp', 'cardio', 'bbc', 'sst2','subj']
+dataset_list = ['cr']
 
 if __name__ == "__main__":   
     

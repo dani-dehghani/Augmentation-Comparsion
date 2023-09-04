@@ -70,7 +70,7 @@ class SimpleBert:
 
         # Add any other callbacks you want to use here
 
-        self.model.train_model(self.train, callbacks=callbacks)  
+        self.model.train_model(self.train,callbacks=callbacks)  
 
 
     def compute_metrics(self, preds, labels):        
@@ -83,16 +83,26 @@ class SimpleBert:
         rec = recall_score(labels, preds, average=average)
         f1 = f1_score(labels, preds, average=average)
 
+        # Log metrics to Weights & Biases
+        wandb.log({
+            'acc': acc,
+            'f1': f1,
+            'prec': prec,
+            'rec': rec
+        })
+
         return {
             'acc': acc,
             'f1': f1,
             'prec': prec,
             'rec': rec
         }
+        
     
     def evaluate_model(self):
         self.result, _, _ = self.model.eval_model(self.test, compute_metrics=self.compute_metrics)
         self.result_metrics = self.result
+        
         # Log metrics to W&B
         wandb.log(self.result_metrics)
         # Clear GPU memory
