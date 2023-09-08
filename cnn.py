@@ -162,7 +162,7 @@ class CNN:
                 "architecture": "CNN",
                 "dataset name": dataset_name,
                 "dataset type": 'Original',
-                "dataset percentage": '20',
+                "dataset percentage": '50',
                 "dataset number of example": None
                 
                 }         
@@ -183,7 +183,7 @@ class CNN:
             res_dict[i+1] = res
             if self.history.history['val_loss'][-1] < best_val_loss:
                 best_val_loss = self.history.history['val_loss'][-1]
-                self.model.save(f"models/cnn/20_percent/{dataset_name}_best_model.h5")
+                self.model.save(f"models/cnn/50_percent/{dataset_name}_best_model.h5")
                 if self.fulldataset == True:
                     self.saving_embeddings(test_dataset, dataset_name)
             self.model.set_weights([np.zeros(w.shape) for w in self.model.get_weights()])
@@ -192,7 +192,7 @@ class CNN:
 
         # Save the average results to disk
         os.makedirs("results/original/cnn", exist_ok=True)
-        with open(f"results/original/cnn/20_percent/{dataset_name}_20_percent_results.txt", "w") as f:
+        with open(f"results/original/cnn/50_percent/{dataset_name}_50_percent_results.txt", "w") as f:
             for key, value in avg_dict.items():
                 f.write(f"{key}: {value}\n")
 
