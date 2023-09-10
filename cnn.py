@@ -17,7 +17,8 @@ import random
 import wandb
 from wandb.keras import WandbCallback
 
-wandb.login()
+wandb.login(key='f157764bf0fa24db8021db18897471038f4596d2')
+
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 np.random.seed(100)
@@ -26,7 +27,10 @@ tf.random.set_seed(100)
 
 
 class CNN:
-    def __init__(self, dims, w2v_path,fulldataset= False, max_seq_len=20, batch_size=128, epochs=20, chunk_size=1000):
+    def __init__(self, dims, w2v_path,,aug_method,percentage, num_example,fulldataset= False, max_seq_len=20, batch_size=128, epochs=20, chunk_size=1000):
+        self.aug_method = aug_method
+        self.percentage = percentage
+        self.num_example = num_example
         self.fulldataset = fulldataset
         self.dims = dims
         self.max_seq_len = max_seq_len
@@ -154,19 +158,25 @@ class CNN:
         best_val_loss = float('inf')
         for i in range(n):
 
+
             wandb.init(
                 
                 project="Aug",
                 config={
+                
                 "Ite": i,
                 "architecture": "CNN",
                 "dataset name": dataset_name,
-                "dataset type": 'Original',
-                "dataset percentage": '50',
-                "dataset number of example": None
+                "dataset type": 'Augmented',
+                "dataset percentage": self.percentage,
+                "Aug method": f'{self.aug_method}',
+                "examples": self.num_example
                 
                 }         
             )
+
+            
+
 
             print(f'Run {i+1} of {n}')
             try:
@@ -176,6 +186,7 @@ class CNN:
                 self.model = None
                 self.build_cnn()
                 continue
+
             res = self.evaluate(test_dataset)  # Updated to use test_dataset
             for metric_name, metric_value in res.items():
                 wandb.log({metric_name: metric_value})
@@ -183,7 +194,7 @@ class CNN:
             res_dict[i+1] = res
             if self.history.history['val_loss'][-1] < best_val_loss:
                 best_val_loss = self.history.history['val_loss'][-1]
-                self.model.save(f"models/cnn/50_percent/{dataset_name}_best_model.h5")
+                self.model.save(f"models/cnn/full/{dataset_name}_best_model.h5")
                 if self.fulldataset == True:
                     self.saving_embeddings(test_dataset, dataset_name)
             self.model.set_weights([np.zeros(w.shape) for w in self.model.get_weights()])
