@@ -25,8 +25,7 @@ random.seed(100)
 tf.random.set_seed(100)
 
 
-wandb.login()
-
+wandb.login(key='f157764bf0fa24db8021db18897471038f4596d2')
 
 class LSTM:
     def __init__(self, dims, w2v_path,aug_method,percentage, num_example,fulldataset= False ,max_seq_len=20, batch_size=128, epochs=20, chunk_size=1000):
