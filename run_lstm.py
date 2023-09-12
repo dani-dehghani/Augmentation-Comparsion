@@ -4,7 +4,7 @@ from lstm import *
 import ast
 
 dataset_list1 = ['agnews', 'subj', 'pc', 'yelp', 'cr']
-dataset_list2 = [ 'bbc', 'sst2', 'pubmed', 'trec','cardio']
+dataset_list2 = [  'sst2', 'pubmed', 'trec','cardio','bbc']
 aug_list = ['aeda', 'backtranslation', 'charswap', 'checklist', 'clare', 'deletion', 'eda', 'embedding', 'wordnet']
 aug_percent = [10, 20, 50, 100]
 example_list = [1, 2, 4]
