@@ -2,13 +2,14 @@ from  cnn import CNN
 from itertools import product
 import ast
 
-dataset_list = ['agnews', 'subj', 'pc', 'yelp', 'cr', 'cardio', 'bbc', 'sst2', 'pubmed', 'trec']
+dataset_list1 = ['agnews', 'subj', 'pc', 'yelp']
+dataset_list2 = ['cr', 'sst2', 'pubmed', 'trec', 'cardio', 'bbc']
 aug_list = ['aeda', 'backtranslation', 'charswap', 'checklist', 'clare', 'deletion', 'eda', 'embedding', 'wordnet']
 aug_percent = [10, 20, 50, 100]
 example_list = [1, 2, 4]
 
 # list of all possible combinations
-param_combinations = list(product(dataset_list, aug_list, aug_percent, example_list))
+param_combinations = list(product(dataset_list2, aug_list, aug_percent, example_list))
 
 output_file_path = 'data/augmented/successful_params_cnn.txt'
 

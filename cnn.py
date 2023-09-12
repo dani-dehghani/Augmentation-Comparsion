@@ -27,7 +27,7 @@ tf.random.set_seed(100)
 
 
 class CNN:
-    def __init__(self, dims, w2v_path,,aug_method,percentage, num_example,fulldataset= False, max_seq_len=20, batch_size=128, epochs=20, chunk_size=1000):
+    def __init__(self, dims, w2v_path,aug_method,percentage, num_example,fulldataset= False, max_seq_len=20, batch_size=128, epochs=20, chunk_size=1000):
         self.aug_method = aug_method
         self.percentage = percentage
         self.num_example = num_example
