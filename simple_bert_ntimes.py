@@ -3,7 +3,7 @@ import numpy as np
 import shutil
 import glob
 from simpletransformers.classification import ClassificationModel
-#import torch
+import torch
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.preprocessing import LabelEncoder
 import os
@@ -110,7 +110,7 @@ class SimpleBert:
         # Log metrics to W&B
         wandb.log(self.result_metrics)
         # Clear GPU memory
-        #torch.cuda.empty_cache()
+        torch.cuda.empty_cache()
 
 
         return self.result_metrics
@@ -146,7 +146,7 @@ class SimpleBert:
             for metric_name, metric_value in metrics.items():
                 wandb.log({metric_name: metric_value})
                 
-            self.extract_pre_last_layer(self.test_embedding, self.dataset_name)
+            #self.extract_pre_last_layer(self.test_embedding, self.dataset_name)
 
             
             temp_dict = {}
