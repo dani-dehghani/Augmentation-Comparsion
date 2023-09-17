@@ -209,16 +209,16 @@ class SimpleBert:
         inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
 
         # Get the output from the base model (layer before the last layer)
-        with torch.no_grad():
-            base_model_output = self.model.model.distilbert(**inputs)
+        #with torch.no_grad():
+            #base_model_output = self.model.model.distilbert(**inputs)
 
-        hidden_states = base_model_output.last_hidden_state
-        cls_embeddings = hidden_states[:, 0, :].cpu().numpy()
-        os.makedirs("embeddings/original/bert", exist_ok=True)
-        save_path = f'embeddings/original/bert/{dataset_name}.npy'
+        #hidden_states = base_model_output.last_hidden_state
+        #cls_embeddings = hidden_states[:, 0, :].cpu().numpy()
+        #os.makedirs("embeddings/original/bert", exist_ok=True)
+        #save_path = f'embeddings/original/bert/{dataset_name}.npy'
 
         # Save the embeddings as a NumPy .npy file
-        np.save(save_path, cls_embeddings)
+        #np.save(save_path, cls_embeddings)
 
 
 
