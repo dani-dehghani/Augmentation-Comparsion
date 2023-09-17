@@ -139,7 +139,7 @@ class SimpleBert:
 
 
             self.model = None            
-            self.model = ClassificationModel('distilbert', 'distilbert-base-uncased', num_labels=self.num_labels, cuda_device=0, use_cuda=True, args=self.args)
+            self.model = ClassificationModel('distilbert', 'distilbert-base-uncased', num_labels=self.num_labels, cuda_device=0, use_cuda=False, args=self.args)
             self.train_model()
             self.evaluate_model()
             metrics = self.save_results(write_to_file=False)
