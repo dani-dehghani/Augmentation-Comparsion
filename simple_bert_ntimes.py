@@ -59,7 +59,7 @@ class SimpleBert:
         self.num_labels = self.train['labels'].nunique()
 
     def train_model(self):        
-        self.model = ClassificationModel('distilbert', 'distilbert-base-uncased', num_labels=self.num_labels, cuda_device=0, use_cuda=True, args=self.args)
+        self.model = ClassificationModel('distilbert', 'distilbert-base-uncased', num_labels=self.num_labels, cuda_device=0, use_cuda=False, args=self.args)
 
         callbacks = []
 
