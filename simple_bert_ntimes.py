@@ -11,13 +11,17 @@ import wandb
 from wandb.keras import WandbCallback
 
 
-wandb.login()
+wandb.login(key='f157764bf0fa24db8021db18897471038f4596d2')
 
 
 np.random.seed(100)
 
 class SimpleBert:
-    def __init__(self, dataset_name):
+    def __init__(self,dataset_name ,aug_method,percentage, num_example,fulldataset= False):
+        self.aug_method = aug_method
+        self.percentage = percentage
+        self.num_example = num_example
+        self.fulldataset = fulldataset
         self.dataset_name = dataset_name
         self.args = {
         'output_dir': f'./models/bert/full/{self.dataset_name}',
@@ -41,10 +45,10 @@ class SimpleBert:
         self.n_times_results = None
         self.callbacks = []
 
-    def load_data(self):
+    def load_data(self, train_path, test_path):
         encoder = LabelEncoder()
-        self.train = pd.read_csv(f'data/original/{self.dataset_name}/train.csv').sample(frac=1) # shuffle # change fraction of the dataset here
-        self.test_embedding = pd.read_csv(f'data/original/{self.dataset_name}/test.csv') # this will be used only for embedding
+        self.train = pd.read_csv(train_path).sample(frac=1) # shuffle # change fraction of the dataset here
+        self.test_embedding = pd.read_csv(test_path) # this will be used only for embedding
         self.test = pd.read_csv(f'data/original/{self.dataset_name}/test.csv')
         self.train = self.train[['text', 'class']]
         self.test = self.test[['text', 'class']]
@@ -85,10 +89,10 @@ class SimpleBert:
 
         # Log metrics to Weights & Biases
         wandb.log({
-            'acc': acc,
-            'f1': f1,
-            'prec': prec,
-            'rec': rec
+            'accuracy': acc,
+            'f1_score': f1,
+            'precision': prec,
+            'recall': rec
         })
 
         return {
@@ -121,15 +125,18 @@ class SimpleBert:
                 
                 project="Aug",
                 config={
+                
                 "Ite": i,
                 "architecture": "Transformer",
-                "dataset name": self.dataset_name,
-                "dataset type": 'Original',
-                "dataset percentage": 'Full dataset',
-                "dataset number of example": None
+                "dataset name": f'{self.dataset_name}',
+                "dataset type": 'Augmented',
+                "dataset percentage": self.percentage,
+                "Aug method": f'{self.aug_method}',
+                "examples": self.num_example
                 
                 }         
             )
+
 
             self.model = None            
             self.model = ClassificationModel('distilbert', 'distilbert-base-uncased', num_labels=self.num_labels, cuda_device=0, use_cuda=True, args=self.args)
@@ -146,7 +153,6 @@ class SimpleBert:
             for key, value in metrics.items():         
                 temp_dict[key] = value
             dict_list.append(temp_dict)
-            # Finish the run
             wandb.finish()
 
         new_dict = {}
