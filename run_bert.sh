@@ -1,7 +1,7 @@
 #!/bin/bash
 # Define the two lists
 #names=('sst2' 'pubmed' 'trec' 'cardio' 'bbc') #pc12740
-names=('cr' 'agnews' 'subj' 'pc' 'yelp') #pc12739
+names=('pc' 'yelp' 'cardio' 'bbc') 
 augs=('aeda' 'backtranslation' 'charswap' 'checklist' 'clare' 'deletion' 'eda' 'embedding' 'wordnet')
 percents=('10' '20' '50' '100')
 examples=('1' '2' '4')
