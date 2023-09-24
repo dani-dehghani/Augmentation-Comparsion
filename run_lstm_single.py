@@ -26,12 +26,15 @@ if __name__ == '__main__':
     #print('started')
     #time.sleep(10)
     #print('finished')
+    params = (args.name, args.aug, int(args.percent), int(args.example))
+    print(params)
+    #if params not in successful_params:
 
     print(f'Running {args.name} dataset')
     train_path = f'data/augmented/{args.name}/{args.aug}/meth_{args.aug}_{args.percent}_pctwts_0.1_example_{args.example}.csv'
     test_path = f'data/augmented/{args.name}/{args.aug}/test.csv'
 
-    
+        
     w2v_path = 'w2v.pkl'
     dataset_name = args.name
     aug_method = args.aug
@@ -54,9 +57,9 @@ if __name__ == '__main__':
         formatted_params = f"('{params[0]}', '{params[1]}', {params[2]}, {params[3]}),"
         output_file.write(formatted_params + '\n')
 
-        
+            
     successful_params.append(params) 
-
+    
 
 
 
